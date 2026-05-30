@@ -10,9 +10,34 @@ parser = argparse.ArgumentParser(
     description="CLI app to track your tasks and manage your to-do list."
 )
 
-parser.add_argument('action', help="Action to take")
-parser.add_argument('id', help="ID number of existing task")
-parser.add_argument('context', help="Title or status of task")
+subparsers = parser.add_subparsers(
+    dest="action",
+    help="Action to take",
+)
+
+add_parser = subparsers.add_parser('add', help="Add a task")
+add_parser.add_argument("description", help="Description of the task")
+
+update_parser = subparsers.add_parser('update', help="Update a task")
+update_parser.add_argument("id", help="ID of the task")
+update_parser.add_argument("description", help="Description of the task")
+
+delete_parser = subparsers.add_parser('delete', help="Delete a task")
+delete_parser.add_argument("id", help="ID of the task")
+
+mark_done_parser = subparsers.add_parser('mark-done', help="Mark a task as done")
+mark_done_parser.add_argument("id", help="ID of the task")
+
+mark_in_progress_parser = subparsers.add_parser('mark-in-progress', help="Mark a task as in progress")
+mark_in_progress_parser.add_argument("id", help="ID of the task")
+
+list_parser = subparsers.add_parser('list', help="List all tasks")
+list_parser.add_argument("filter", nargs='?', choices=('done', 'prog', 'todo'), help="Filter by done, in progress, incomplete tasks")
+
+
+# parser.add_argument('action', help="Action to take", choices=["add", "update", "delete", "mark-done", "mark-in-progress", "list"])
+# parser.add_argument('id', help="ID number of existing task (not required for add, list)", nargs='?', default=0, type=int)
+# parser.add_argument('context', help="Title or status of task (not required for delete, mark-done, mark-in-progress, list)", nargs='?', default="", type=str)
 
 args = parser.parse_args()
 print(f"args: {args}")
@@ -30,11 +55,15 @@ else:
 # ==================== DECODING JSON OBJECT ====================
 
 tasks = json.loads(json_path.read_text())
-print(f"Tasks: {tasks}; len: {len(tasks)}")
+print(f"Tasks: {tasks}; len: {len(tasks)}; type: {type(tasks)}") #DEBUG
 
 # ==================== PROCESS ARGS ====================
 
-print(f"Action: {args.action}; type: {type(args.action)}")
 
-# test = input("what: ")
-# print(f"test: {test}")
+if args.action == "add":
+    # tasks[len(tasks) + 1] = args.context
+    print("add achieved")
+
+# ==================== WRITE TO FILE ====================
+
+json_path.write_text(json.dumps(tasks))
