@@ -81,18 +81,20 @@ elif args.action == "update":
     task_dict = find_task_by_id(tasks, int(args.id))
     print(f'Updated task: [{args.id}] [{task_dict['description']}] -> [{args.description}]')
     task_dict['description'] = args.description
+    task_dict['updatedAt'] = datetime.now().isoformat()
 
 elif args.action == "delete":
-    # Action
-    print(f'Deleted task: [{args.id}] {args.description}')
+    task_dict = find_task_by_id(tasks, int(args.id))
+    print(f'Deleted task: [{args.id}] [{task_dict['description']}]')
+    tasks.pop(tasks.index(task_dict))
 
 elif args.action == "mark-done":
     # Action
-    print(f'Marked done: [{args.id}] {args.description}')
+    print(f'Marked done: [{args.id}] [{args.description}]')
 
 elif args.action == "mark-in-progress":
     # Action
-    print(f'Marked in progress: [{args.id}] {args.description}')
+    print(f'Marked in progress: [{args.id}] [{args.description}]')
 
 elif args.action == "list":
     [print(task) for task in tasks]
