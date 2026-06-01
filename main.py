@@ -3,17 +3,15 @@
 import argparse
 from datetime import datetime
 import json
-import os.path
 from pathlib import Path
 
 # ==================== DEFINED FUNCTIONS ====================
 
 def find_task_by_id(task_list, task_id):
-    target_task = None
     for task in task_list:
         if task['id'] == task_id:
-            target_task = task
-    return target_task
+            return task
+    return None
 
 # ==================== HANDLING CLI ARGUMENTS ====================
 
@@ -44,19 +42,14 @@ mark_in_progress_parser = subparsers.add_parser('mark-in-progress', help="Mark a
 mark_in_progress_parser.add_argument("id", type=int, help="ID of the task")
 
 list_parser = subparsers.add_parser('list', help="List all tasks")
-list_parser.add_argument("filter", nargs='?', choices=('done', 'prog', 'todo'), help="Filter by done, in progress, incomplete tasks")
+list_parser.add_argument("status", nargs='?', choices=('done', 'prog', 'todo'), help="Filter by done, in progress, incomplete tasks")
 
-
-# parser.add_argument('action', help="Action to take", choices=["add", "update", "delete", "mark-done", "mark-in-progress", "list"])
-# parser.add_argument('id', help="ID number of existing task (not required for add, list)", nargs='?', default=0, type=int)
-# parser.add_argument('context', help="Title or status of task (not required for delete, mark-done, mark-in-progress, list)", nargs='?', default="", type=str)
 
 args = parser.parse_args()
 # print(f"args: {args}") #DEBUG
 
 # ==================== HANDLING FILE IO ====================
 
-# if not os.path.exists('./tasks.json'):
 json_path = Path("tasks.json")
 if not json_path.exists():
     json_path.write_text("[]")
@@ -104,9 +97,10 @@ elif args.action == "mark-in-progress":
     print(f'Marked in progress: [{args.id}] [{task_dict['description']}]')
 
 elif args.action == "list":
-    [print(task) for task in tasks]
-    print(f'List')
-
+    if args.status:
+        [print(task) for task in tasks if task['status'] == args.status]
+    else:
+        [print(task) for task in tasks]
 # ==================== WRITE TO FILE ====================
 
 # print(tasks) #DEBUG
