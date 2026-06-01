@@ -31,17 +31,17 @@ add_parser = subparsers.add_parser('add', help="Add a task")
 add_parser.add_argument("description", help="Description of the task")
 
 update_parser = subparsers.add_parser('update', help="Update a task")
-update_parser.add_argument("id", help="ID of the task")
+update_parser.add_argument("id", type=int, help="ID of the task")
 update_parser.add_argument("description", help="Description of the task")
 
 delete_parser = subparsers.add_parser('delete', help="Delete a task")
-delete_parser.add_argument("id", help="ID of the task")
+delete_parser.add_argument("id", type=int, help="ID of the task")
 
 mark_done_parser = subparsers.add_parser('mark-done', help="Mark a task as done")
-mark_done_parser.add_argument("id", help="ID of the task")
+mark_done_parser.add_argument("id", type=int, help="ID of the task")
 
 mark_in_progress_parser = subparsers.add_parser('mark-in-progress', help="Mark a task as in progress")
-mark_in_progress_parser.add_argument("id", help="ID of the task")
+mark_in_progress_parser.add_argument("id", type=int, help="ID of the task")
 
 list_parser = subparsers.add_parser('list', help="List all tasks")
 list_parser.add_argument("filter", nargs='?', choices=('done', 'prog', 'todo'), help="Filter by done, in progress, incomplete tasks")
@@ -70,8 +70,7 @@ else:
 tasks = json.loads(json_path.read_text())
 # print(f"Tasks: {tasks}; len: {len(tasks)}; type: {type(tasks)}") #DEBUG
 
-# ==================== PROCESS ARGS ====================
-
+# ==================== PROCESS ACTIONS ====================
 
 if args.action == "add":
     if len(tasks) == 0:
@@ -82,23 +81,27 @@ if args.action == "add":
     print(f'Added task: {args.description}')
 
 elif args.action == "update":
-    task_dict = find_task_by_id(tasks, int(args.id))
+    task_dict = find_task_by_id(tasks, args.id)
     print(f'Updated task: [{args.id}] [{task_dict['description']}] -> [{args.description}]')
     task_dict['description'] = args.description
     task_dict['updatedAt'] = datetime.now().isoformat()
 
 elif args.action == "delete":
-    task_dict = find_task_by_id(tasks, int(args.id))
+    task_dict = find_task_by_id(tasks, args.id)
     print(f'Deleted task: [{args.id}] [{task_dict['description']}]')
     tasks.pop(tasks.index(task_dict))
 
 elif args.action == "mark-done":
-    # Action
-    print(f'Marked done: [{args.id}] [{args.description}]')
+    task_dict = find_task_by_id(tasks, args.id)
+    task_dict['status'] = 'done'
+    task_dict['updatedAt'] = datetime.now().isoformat()
+    print(f'Marked done: [{args.id}] [{task_dict['description']}]')
 
 elif args.action == "mark-in-progress":
-    # Action
-    print(f'Marked in progress: [{args.id}] [{args.description}]')
+    task_dict = find_task_by_id(tasks, args.id)
+    task_dict['status'] = 'prog'
+    task_dict['updatedAt'] = datetime.now().isoformat()
+    print(f'Marked in progress: [{args.id}] [{task_dict['description']}]')
 
 elif args.action == "list":
     [print(task) for task in tasks]
