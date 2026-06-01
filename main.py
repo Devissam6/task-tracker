@@ -74,7 +74,11 @@ tasks = json.loads(json_path.read_text())
 
 
 if args.action == "add":
-    tasks.append({'id': len(tasks) + 1, 'description': args.description, 'status': 'todo', 'createdAt': datetime.now().isoformat(), 'updatedAt': datetime.now().isoformat()})
+    if len(tasks) == 0:
+        new_id = 1
+    else:
+        new_id = 1 + max(task['id'] for task in tasks)
+    tasks.append({'id': new_id, 'description': args.description, 'status': 'todo', 'createdAt': datetime.now().isoformat(), 'updatedAt': datetime.now().isoformat()})
     print(f'Added task: {args.description}')
 
 elif args.action == "update":
