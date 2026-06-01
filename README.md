@@ -202,3 +202,7 @@ Potential improvements for future versions:
 ## License
 
 This project is open source and available for personal or educational use.
+
+## Footnote
+
+Project specification obtained from [Roadmap.sh](https://roadmap.sh/projects/task-tracker)
