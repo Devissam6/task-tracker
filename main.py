@@ -1,4 +1,5 @@
 import argparse
+from datetime import datetime
 import json
 import os.path
 from pathlib import Path
@@ -40,17 +41,17 @@ list_parser.add_argument("filter", nargs='?', choices=('done', 'prog', 'todo'), 
 # parser.add_argument('context', help="Title or status of task (not required for delete, mark-done, mark-in-progress, list)", nargs='?', default="", type=str)
 
 args = parser.parse_args()
-print(f"args: {args}")
+print(f"args: {args}") #DEBUG
 
 # ==================== HANDLING FILE IO ====================
 
 # if not os.path.exists('./tasks.json'):
 json_path = Path("tasks.json")
 if not json_path.exists():
-    json_path.write_text("{}")
-    print(f"{json_path} created.")
+    json_path.write_text("[]")
+    print(f"{json_path} created.") #DEBUG
 else:
-    print(f"{json_path} already exists.")
+    print(f"{json_path} already exists.") #DEBUG
 
 # ==================== DECODING JSON OBJECT ====================
 
@@ -61,9 +62,30 @@ print(f"Tasks: {tasks}; len: {len(tasks)}; type: {type(tasks)}") #DEBUG
 
 
 if args.action == "add":
-    # tasks[len(tasks) + 1] = args.context
-    print("add achieved")
+    tasks.append({'id': len(tasks) + 1, 'description': args.description, 'status': 'todo', 'createdAt': datetime.now().isoformat(), 'updatedAt': datetime.now().isoformat()})
+    print(f'Added task: {args.description}')
+
+elif args.action == "update":
+    # Action
+    print(f'Updated task: [{args.id}] {args.description}')
+
+elif args.action == "delete":
+    # Action
+    print(f'Deleted task: [{args.id}] {args.description}')
+
+elif args.action == "mark-done":
+    # Action
+    print(f'Marked done: [{args.id}] {args.description}')
+
+elif args.action == "mark-in-progress":
+    # Action
+    print(f'Marked in progress: [{args.id}] {args.description}')
+
+elif args.action == "list":
+    # Action
+    print(f'List')
 
 # ==================== WRITE TO FILE ====================
 
+print(tasks) #DEBUG
 json_path.write_text(json.dumps(tasks))
