@@ -1,8 +1,19 @@
+# ==================== IMPORTS ====================
+
 import argparse
 from datetime import datetime
 import json
 import os.path
 from pathlib import Path
+
+# ==================== DEFINED FUNCTIONS ====================
+
+def find_task_by_id(task_list, task_id):
+    target_task = None
+    for task in task_list:
+        if task['id'] == task_id:
+            target_task = task
+    return target_task
 
 # ==================== HANDLING CLI ARGUMENTS ====================
 
@@ -41,7 +52,7 @@ list_parser.add_argument("filter", nargs='?', choices=('done', 'prog', 'todo'), 
 # parser.add_argument('context', help="Title or status of task (not required for delete, mark-done, mark-in-progress, list)", nargs='?', default="", type=str)
 
 args = parser.parse_args()
-print(f"args: {args}") #DEBUG
+# print(f"args: {args}") #DEBUG
 
 # ==================== HANDLING FILE IO ====================
 
@@ -49,14 +60,15 @@ print(f"args: {args}") #DEBUG
 json_path = Path("tasks.json")
 if not json_path.exists():
     json_path.write_text("[]")
-    print(f"{json_path} created.") #DEBUG
+    # print(f"{json_path} created.") #DEBUG
 else:
-    print(f"{json_path} already exists.") #DEBUG
+    # print(f"{json_path} already exists.") #DEBUG
+    pass
 
 # ==================== DECODING JSON OBJECT ====================
 
 tasks = json.loads(json_path.read_text())
-print(f"Tasks: {tasks}; len: {len(tasks)}; type: {type(tasks)}") #DEBUG
+# print(f"Tasks: {tasks}; len: {len(tasks)}; type: {type(tasks)}") #DEBUG
 
 # ==================== PROCESS ARGS ====================
 
@@ -66,8 +78,9 @@ if args.action == "add":
     print(f'Added task: {args.description}')
 
 elif args.action == "update":
-    # Action
-    print(f'Updated task: [{args.id}] {args.description}')
+    task_dict = find_task_by_id(tasks, int(args.id))
+    print(f'Updated task: [{args.id}] [{task_dict['description']}] -> [{args.description}]')
+    task_dict['description'] = args.description
 
 elif args.action == "delete":
     # Action
@@ -82,10 +95,10 @@ elif args.action == "mark-in-progress":
     print(f'Marked in progress: [{args.id}] {args.description}')
 
 elif args.action == "list":
-    # Action
+    [print(task) for task in tasks]
     print(f'List')
 
 # ==================== WRITE TO FILE ====================
 
-print(tasks) #DEBUG
+# print(tasks) #DEBUG
 json_path.write_text(json.dumps(tasks))
